@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Системы счисления</title>
+<meta charset='utf-8'>
+<style>
+ body{
+     color:#8B0000;
+ }
+</style>
+</head>
+
+<body>
+
+<form method="POST">
+<input type="text" name="number" placeholder="Введите число"/>
+<input type="text" name="firstNumberSystem" placeholder="Из какой с.с. переводим" />
+<input type="text" name="secondNumberSystem" placeholder="В какую с.с. переводим" />
+
+<input type="submit"/>
+
+</form>
+
+<?php
+$number=$_POST['number'];
+$firstNumberSystem=$_POST['firstNumberSystem'];
+$secondNumberSystem=$_POST['secondNumberSystem'];
+
+$firstNumberSystem=(int)$firstNumberSystem;
+$secondNumberSystem=(int)$secondNumberSystem;
+$number=(string)$number;
+echo "<br/>Ответ:  ";
+
+function checkNumber($number){
+    $check=strpos($number, '.');
+    $check=(boolean)$check;
+    if($check==FALSE){
+        $number.='.0';
+    }
+    return $number;
+}
+
+translateInOtherSystem($number,$firstNumberSystem,$secondNumberSystem);
+
+function translateInOtherSystem($number,$firstNumberSystem,$secondNumberSystem){//основная функция перевода, переводит из любой с.с. в любую с.с. (от двоичной до шестнадцатиричной)
+    $number=checkNumber($number);
+    if($secondNumberSystem==10){
+        $result=translateIn10NumberSystem($number,$firstNumberSystem);
+    }
+    if($firstNumberSystem==10){
+        $result=translateFrom10NumberSystem($number,$secondNumberSystem);
+    }
+    if($firstNumberSystem!=10 && $secondNumberSystem!=10){
+        $result=translateIn10NumberSystem($number,$firstNumberSystem);
+        $result=translateFrom10NumberSystem($result,$secondNumberSystem);
+    }
+    echo $result;
+}
+
+
+
+function translateFromAlphabet16NumberSystem($number){//Приводит число к верной шестнадцатиричной записи
+    $number=str_split($number);
+    foreach($number as &$grade){
+        switch($grade){
+            case 'A':
+            $grade='10';
+            break;
+
+            case 'B':
+            $grade='11';
+            break;
+
+            case 'C':
+            $grade='12';
+            break;
+
+            case 'D':
+            $grade='13';
+            break;
+
+            case 'E':
+            $grade='14';
+            break;
+
+            case 'F':
+            $grade='15';
+            break;
+        }
+
+    }
+
+    return $number;
+}
+
+function translateInAlphabet16NumberSystem($number){//Трактует алфавит шестнадцатиричной системы в алфавит десятичной с.с.
+  
+    foreach($number as &$grade){
+        switch($grade){
+            case '10':
+            $grade='A';
+            break;
+
+            case '11':
+            $grade='B';
+            break;
+
+            case '12':
+            $grade='C';
+            break;
+
+            case '13':
+            $grade='D';
+            break;
+
+            case '14':
+            $grade='E';
+            break;
+
+            case '15':
+            $grade='F';
+            break;
+        }
+
+    }
+    return $number;
+}
+
+
+function translateIn10NumberSystem($number, $firstNumberSystem){//Переводит из любой с.с. в 10-ную с.с.
+    $result=0;
+    $result=(int)$result;
+    $number=explode('.', $number);
+    $wholePart=$number[0];
+    $fractionalPart=$number[1];
+    if($firstNumberSystem==16){
+        $wholePart=translateFromAlphabet16NumberSystem($wholePart);
+        $fractionalPart=translateFromAlphabet16NumberSystem($fractionalPart);
+    }else{
+    $wholePart=str_split($wholePart);
+    $fractionalPart=str_split($fractionalPart);
+    }
+  
+    foreach ($wholePart as $position => $grade) {
+        $gradeWhole=$grade;
+        $gradeWhole=(float)$gradeWhole;
+        $degree=$firstNumberSystem ** ((float)count($wholePart)-(float)$position-1);
+        $gradeWhole=$gradeWhole * $degree;
+        $result+=$gradeWhole;
+    }
+
+    foreach ($fractionalPart as $position => $grade) {
+        $gradeFractional=$grade;
+        $gradeFractional=(float)$gradeFractional;
+        $degree=(float)$firstNumberSystem**(-1-(float)$position);
+        $gradeFractional=$gradeFractional * $degree;
+        $result+=$gradeFractional;
+    }
+    $result=(string)$result;
+    return $result;
+}
+
+function translateFrom10NumberSystem($number,$secondNumberSystem){
+    $number=(float)$number;
+    $wholePart=floor($number);
+    $fractionalPart=$number-$wholePart;
+    $resultWholePart=[];
+    $resultFractionalPart=[];
+    
+    if($wholePart>=0 && $wholePart<=9){
+        $resultWholePart[]=$wholePart;
+    }else{
+        while($wholePart>=$secondNumberSystem){
+        $resultWholePart[]=$wholePart % $secondNumberSystem;
+        $wholePart=($wholePart-($wholePart % $secondNumberSystem))/$secondNumberSystem;
+        }
+        $resultWholePart[]=$wholePart;
+    }
+    $resultWholePart=array_reverse($resultWholePart);
+    if($secondNumberSystem==16) $resultWholePart=translateInAlphabet16NumberSystem($resultWholePart);
+    $resultWholePart=implode($resultWholePart);
+
+    for($i=0;$i<8;$i++){//с точностью до 8 знаков после запятой
+        $b=$fractionalPart*(float)$secondNumberSystem;
+        $resultFractionalPart[]=floor($b);
+        $fractionalPart=$b-floor($b);
+        
+    }
+    if($secondNumberSystem==16) $resultFractionalPart=translateInAlphabet16NumberSystem($resultFractionalPart);
+    $resultFractionalPart=implode($resultFractionalPart);
+
+$result=$resultWholePart.'.'.$resultFractionalPart;
+
+return $result;
+}
+
+
+
+?>
+
+</body>
+
+</html>
