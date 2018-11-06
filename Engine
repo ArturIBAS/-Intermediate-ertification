@@ -1,0 +1,97 @@
+<?php
+
+$piston1='up';
+$piston2='up';
+$piston3='up';
+$piston4='up';
+$isSpark1=0;
+$isSpark2=0;
+$isSpark3=0;
+$isSpark4=0;
+$firstValve1='close';
+$firstValve2='close';
+$secondValve1='close';
+$secondValve2='close';
+$thirdValve1='close';
+$thirdValve2='close';
+$fourthValve1='close';
+$fourthValve2='close';
+
+function runDriver($numCylinder,$command,$parametr){
+$parametr=(string)$parametr;
+echo "Run command $command in $numCylinder cylindre with parametr: ".$parametr;
+echo '<br/>';
+}
+
+//основная функция работы ДВС
+function startEngine($piston1,$piston2,$piston3,$piston4,$isSpark1,$isSpark2,$isSpark3,$isSpark4,$firstValve1,$firstValve2,$secondValve1,$secondValve2,$thirdValve1,$thirdValve2,$fourthValve1,$fourthValve2){
+	
+	for($i=0;$i<1;$i++){
+		//первый такт
+		startCylinder(1,$piston1,'down',$firstValve1, 'open',$firstValve2,'close',$isSpark1,0);
+		startCylinder(2,$piston2,'up',$secondValve1,'close',$secondValve2,'close',$isSpark2,0);
+		startCylinder(3,$piston3,'up',$thirdValve1,'close',$thirdValve2,'close',$isSpark3,0);
+		startCylinder(4,$piston4,'down',$fourthValve1,'close',$fourthValve2,'close',$isSpark4,0);
+		echo '<br/> <br/>';	
+		//второй такт
+		startCylinder(1,$piston1,'up',$firstValve1,'close',$firstValve2,'close',$isSpark1,0);
+		startCylinder(2,$piston2,'down',$secondValve1,'close',$secondValve2,'close',$isSpark2,0);
+		startCylinder(3,$piston3,'down',$thirdValve1,'open',$thirdValve2,'close',$isSpark3,0);
+		startCylinder(4,$piston4,'up',$fourthValve1,'close',$fourthValve2,'close',$isSpark4,0);
+		echo '<br/> <br/>';	
+		//третий такт
+		startCylinder(1,$piston1,'down',$firstValve1,'close',$firstValve2,'close',$isSpark1,1);
+		startCylinder(2,$piston2,'up',$secondValve1,'close',$secondValve2,'close',$isSpark2,0);
+		startCylinder(3,$piston3,'up',$thirdValve1,'close',$thirdValve2,'close',$isSpark3,0);
+		startCylinder(4,$piston4,'down',$fourthValve1,'open',$fourthValve2,'close',$isSpark4,0);
+		echo '<br/> <br/>';	
+		//четвертый такт
+		startCylinder(1,$piston1,'up',$firstValve1,'close',$firstValve2,'open',$isSpark1,0);
+		startCylinder(1,$piston1,'up',$firstValve1,'close',$firstValve2,'close',$isSpark1,0);
+		startCylinder(2,$piston2,'down',$secondValve1,'open',$secondValve2,'close',$isSpark2,0);
+		startCylinder(3,$piston3,'down',$thirdValve1,'close',$thirdValve2,'close',$isSpark3,1);
+		startCylinder(4,$piston4,'up',$fourthValve1,'close',$fourthValve2,'close',$isSpark4,0);
+		echo '<br/> <br/>';	
+
+		startCylinder(1,$piston1,'down',$firstValve1,'close',$firstValve2,'close',$isSpark1,0);
+		startCylinder(2,$piston2,'up',$secondValve1,'close',$secondValve2,'close',$isSpark2,0);
+		startCylinder(3,$piston3,'up',$thirdValve1,'close',$thirdValve2,'open',$isSpark3,0);
+		startCylinder(4,$piston4,'down',$fourthValve1,'close',$fourthValve2,'close',$isSpark4,1);
+		echo '<br/> <br/>';
+
+		startCylinder(1,$piston1,'up',$firstValve1,'close',$firstValve2,'close',$isSpark1,0);
+		startCylinder(2,$piston2,'down',$secondValve1,'close',$secondValve2,'open',$isSpark2,1);
+		startCylinder(3,$piston3,'down',$thirdValve1,'close',$thirdValve2,'close',$isSpark3,0);
+		startCylinder(4,$piston4,'up',$fourthValve1,'close',$fourthValve2,'close',$isSpark4,0);
+		echo '<br/> <br/>';
+
+	}
+}
+
+startEngine($piston1,$piston2,$piston3,$piston4,$isSpark1,$isSpark2,$isSpark3,$isSpark4,$firstValve1,$firstValve2,$secondValve1,$secondValve2,$thirdValve1,$thirdValve2,$fourthValve1,$fourthValve2);
+
+//функция, управляющая процессами в одном цилиндре
+function startCylinder($numCylinder,$piston,$positionPiston,$valve1,$positionValve1,$valve2,$positionValve2,$isSpark,$statusSpark){
+	movePiston($numCylinder,$piston,$positionPiston);
+	openValve($numCylinder,$valve1,$positionValve1);
+	openValve($numCylinder,$valve2,$positionValve2);
+	lightSpark($numCylinder,$isSpark,$statusSpark);
+}
+//функция изменения состояния поршня
+function movePiston($numCylinder,&$piston,$positionPiston){
+	$piston=$positionPiston;
+	runDriver($numCylinder,'movePiston',$positionPiston);
+}
+//функция открытия/закрытия клапанов
+function openValve($numCylinder,&$valve,$positionValve){
+	$valve=$positionValve;
+	runDriver($numCylinder,'openValve',$positionValve);
+}
+//функция зажигания искры
+function lightSpark($numCylinder,&$isSpark, $statusSpark){
+	$isSpark=$statusSpark;
+	runDriver($numCylinder,'lightSpark',$statusSpark);
+}
+
+
+?>
