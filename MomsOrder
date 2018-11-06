@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Формы</title>
+<meta charset='utf-8'>
+<style>
+ body{
+     color:#8B0000;
+ }
+
+ input{
+    margin: 20px 0 0 0;
+ }
+</style>
+
+</head>
+
+<body>
+    <form method="POST">
+     <input type ="text" name="temperatureYestd" placeholder="Температура вчера"/>
+     <br/>
+     <input type ="text" name="temperatureToday" placeholder="Температура сегодня"/>
+     <br/>
+     <input type ="text" name="temperatureTmrw" placeholder="Температура завтра"/>
+     <br/>
+     Осадки: <input type="radio" name="precipitation" value="Yes">Есть
+     <input type="radio" name="precipitation" value="No">Нет
+     <br/>
+     <input type="text" name="infoFromAnna" placeholder="Информация от соседки">
+     <br/>
+     <input type="submit" style="margin:30px 0 0 0"/>
+
+    </form>
+
+    <br/>
+
+    <?php
+    $temperatureYestd=$_POST['temperatureYestd'];
+    $temperatureToday=$_POST['temperatureToday'];
+    $temperatureTmrw=$_POST['temperatureTmrw'];
+    $precipitation=$_POST['precipitation'];
+    $infoFromAnna=$_POST['infoFromAnna'];
+
+    $temperatureToday=(int)$temperatureToday;//Приводим переменные к нужному типу
+    $temperatureYestd=(int)$temperatureYestd;
+    $temperatureTmrw=(int)$temperatureTmrw;
+   if($precipitation==='Yes'){
+    $precipitation=(boolean)$precipitation;
+    $precipitation=TRUE;
+    }else{
+    $precipitation=(boolean)$precipitation;
+    $precipitation=FALSE;
+   }
+
+
+   function temperatureFell($temperatureYestd,$temperatureToday,$temperatureTmrw){//функция определяет, падает ли температура в течение 3-х дней
+    if ($temperatureToday<$temperatureYestd && $temperatureTmrw<$temperatureToday){
+        return TRUE;
+    }else{
+        return FALSE;
+    }
+   }
+
+   
+   function FindDangerousWords($infoFromAnna){
+    $countWords=0;//сколько "опасных" словах содержится в информации от Анны
+    $dangerousWords=preg_split("/[\s,]+/", $infoFromAnna);
+  
+    foreach ($dangerousWords as $word) {
+        if($word==='заморозки' || $word==='замёрзла' || $word==='холодно') $countWords++;
+    }
+    return $countWords;
+   }
+
+   function isDanger($temperatureYestd,$temperatureToday,$temperatureTmrw,$infoFromAnna){//опасно ли на улице
+    if(temperatureFell($temperatureYestd,$temperatureToday,$temperatureTmrw)===TRUE && FindDangerousWords($infoFromAnna)>=2 && $temperatureToday-$temperatureTmrw>5){
+        return TRUE;
+    }else{
+        return FALSE;
+    }
+  }
+
+    function DressSon($temperatureYestd,$temperatureToday,$temperatureTmrw,$precipitation,$infoFromAnna){
+        $momSay="NNN";
+        if($temperatureToday<13 && $temperatureYestd>=11 && $temperatureTmrw>=11){
+            $momSay="Надень шапку. ";
+        }
+        if($temperatureYestd<11 || $temperatureTmrw<11){
+            $momSay="Надень зимнюю шапку. ";
+        }
+
+        if(temperatureFell($temperatureYestd,$temperatureToday,$temperatureTmrw)===TRUE || FindDangerousWords($infoFromAnna)>=1){
+            $momSay="Ты хорошо оделся? ";
+        }
+
+        if($precipitation===TRUE){
+                $momSay.="И возьми с собой зонтик. ";
+            }
+        
+        if($temperatureToday-$temperatureTmrw>3){
+                $momSay.="И шарф возьми. ";
+            }
+        return $momSay;
+    }
+
+    function momOrder($temperatureYestd,$temperatureToday,$temperatureTmrw,$infoFromAnna,$precipitation){
+        $momSay="";
+        if(isDanger($temperatureYestd,$temperatureToday,$temperatureTmrw,$infoFromAnna)===TRUE){
+            $momSay="*Голосом Гэндальфа*: ТЫ НЕ ПРОЙДЁЁЁШЬ!!!";
+        }else{
+            $momSay=DressSon($temperatureYestd,$temperatureToday,$temperatureTmrw,$precipitation,$infoFromAnna);
+        }
+        return $momSay;
+    }
+   
+echo momOrder($temperatureYestd,$temperatureToday,$temperatureTmrw,$infoFromAnna,$precipitation);
+
+?>
+          
+
+</body>
+
+</html>
