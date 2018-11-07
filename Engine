@@ -26,7 +26,6 @@ echo '<br/>';
 //основная функция работы ДВС
 function startEngine($piston1,$piston2,$piston3,$piston4,$isSpark1,$isSpark2,$isSpark3,$isSpark4,$firstValve1,$firstValve2,$secondValve1,$secondValve2,$thirdValve1,$thirdValve2,$fourthValve1,$fourthValve2){
 	
-	for($i=0;$i<1;$i++){
 		//первый такт
 		startCylinder(1,$piston1,'down',$firstValve1, 'open',$firstValve2,'close',$isSpark1,0);
 		startCylinder(2,$piston2,'up',$secondValve1,'close',$secondValve2,'close',$isSpark2,0);
@@ -65,10 +64,12 @@ function startEngine($piston1,$piston2,$piston3,$piston4,$isSpark1,$isSpark2,$is
 		startCylinder(4,$piston4,'up',$fourthValve1,'close',$fourthValve2,'close',$isSpark4,0);
 		echo '<br/> <br/>';
 
-	}
+	
 }
 
+while(1){//вызов главной функции
 startEngine($piston1,$piston2,$piston3,$piston4,$isSpark1,$isSpark2,$isSpark3,$isSpark4,$firstValve1,$firstValve2,$secondValve1,$secondValve2,$thirdValve1,$thirdValve2,$fourthValve1,$fourthValve2);
+}
 
 //функция, управляющая процессами в одном цилиндре
 function startCylinder($numCylinder,$piston,$positionPiston,$valve1,$positionValve1,$valve2,$positionValve2,$isSpark,$statusSpark){
